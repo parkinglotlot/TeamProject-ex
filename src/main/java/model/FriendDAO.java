@@ -10,5 +10,9 @@ import vodto.FriendDTO;
 
 public interface FriendDAO {
 
-	
+	// 친구 목록 가져오기
+	List<Friend> selectFriends() throws NamingException, SQLException;
+
+	// 전화번호 중복체크 (중복 : true, 유니크 : false)
+	boolean selectMobile(String userInputMobile) throws NamingException, SQLException;
 }
