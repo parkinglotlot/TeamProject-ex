@@ -27,4 +27,31 @@ public class FriendDAOImpl implements FriendDAO {
 	}
 	
 	
+	
+	@Override
+	public int insertFriend(FriendDTO friendDTO) throws NamingException, SQLException {
+		
+		int result = 0;
+		
+		Connection con = DBConn.getConnection();
+		
+		if (con != null) {
+			String query = "insert into friends(friendName, mobile, addr) "
+					+ "values(?, ?, ?)";
+			
+			PreparedStatement pstmt = con.prepareStatement(query);
+			
+			// 매개변수 세팅
+			pstmt.setString(1, friendDTO.getFriendName());
+			pstmt.setString(2, friendDTO.getMobile());
+			pstmt.setString(3, friendDTO.getAddr());
+			
+			// 실행
+			result = pstmt.executeUpdate();
+			
+			DBConn.closeDB(pstmt, con);
+		}
+		
+		return result;
+	}
 }
