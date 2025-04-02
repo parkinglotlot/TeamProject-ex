@@ -9,6 +9,7 @@ import vodto.Friend;
 import vodto.FriendDTO;
 
 public interface FriendDAO {
-
+	// 친구 저장
+		int insertFriend(FriendDTO friendDTO) throws NamingException, SQLException;
 	
 }
