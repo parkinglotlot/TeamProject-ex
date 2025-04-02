@@ -16,9 +16,10 @@ import vodto.FriendDTO;
 public class FriendDAOImpl implements FriendDAO {
 
 	private static FriendDAOImpl instance = null;
-	
-	private FriendDAOImpl() { }
-	
+
+	private FriendDAOImpl() {
+	}
+
 	public static FriendDAOImpl getInstance() {
 		if (instance == null) {
 			instance = new FriendDAOImpl();
@@ -28,26 +29,23 @@ public class FriendDAOImpl implements FriendDAO {
 
 	@Override
 	public List<Friend> selectFriends() throws NamingException, SQLException {
-List<Friend> result = new ArrayList<Friend>();
-		
+		List<Friend> result = new ArrayList<Friend>();
+
 		Connection con = DBConn.getConnection();
-		
+
 		if (con != null) {
 			// 1. 쿼리문
 			String query = "select * from friends";
-			
+
 			// 2. Statement 준비
 			PreparedStatement pstmt = con.prepareStatement(query);
-			
+
 			// 3. 쿼리 실행
 			ResultSet rs = pstmt.executeQuery();
-			
-			while(rs.next()) {
+
+			while (rs.next()) {
 				// 친구 객체 생성하고 list에 추가
-				result.add(new Friend(
-						rs.getInt("friendNo"), 
-						rs.getString("friendName"), 
-						rs.getString("mobile"), 
+				result.add(new Friend(rs.getInt("friendNo"), rs.getString("friendName"), rs.getString("mobile"),
 						rs.getString("addr")));
 			}
 			DBConn.closeDB(rs, pstmt, con);
@@ -56,39 +54,63 @@ List<Friend> result = new ArrayList<Friend>();
 	}
 
 	@Override
-	public boolean selectMobile(String userInputMobile) throws NamingException, SQLException  {
+	public boolean selectMobile(String userInputMobile) throws NamingException, SQLException {
 		boolean result = false;
-		
-		Connection con =  DBConn.getConnection();
-		
+
+		Connection con = DBConn.getConnection();
+
 		if (con != null) {
 			String query = "select mobile from friends where mobile = ?";
 			PreparedStatement pstmt = con.prepareStatement(query);
 			pstmt.setString(1, userInputMobile);
-			
+
 			ResultSet rs = pstmt.executeQuery();
-			
-			while(rs.next()) {
+
+			while (rs.next()) {
 				result = true;
 			}
-			
+
 			DBConn.closeDB(rs, pstmt, con);
 		}
 		return result;
 	}
-	
-	
-<<<<<<< HEAD
+
+	@Override
+	public int insertFriend(FriendDTO friendDTO) throws NamingException, SQLException {
+
+		int result = 0;
+
+		Connection con = DBConn.getConnection();
+
+		if (con != null) {
+			String query = "insert into friends(friendName, mobile, addr) " + "values(?, ?, ?)";
+
+			PreparedStatement pstmt = con.prepareStatement(query);
+
+			// 매개변수 세팅
+			pstmt.setString(1, friendDTO.getFriendName());
+			pstmt.setString(2, friendDTO.getMobile());
+			pstmt.setString(3, friendDTO.getAddr());
+
+			// 실행
+			result = pstmt.executeUpdate();
+
+			DBConn.closeDB(pstmt, con);
+		}
+
+		return result;
+	}
+
 	@Override
 	public List<Friend> selectFriendByName(String searchName) throws NamingException, SQLException {
 
-		List<Friend> result = new ArrayList<>();
+		List<Friend> result = new ArrayList<Friend>();
 
 		Connection con = DBConn.getConnection();
 
 		if (con != null) {
 
-			String query = "select * from Friends where FriendName like ?";
+			String query = "select * from friends where friendName like ?"; // ? => '%대호%'
 
 			PreparedStatement pstmt = con.prepareStatement(query);
 			pstmt.setString(1, "%" + searchName + "%");
@@ -96,66 +118,7 @@ List<Friend> result = new ArrayList<Friend>();
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				result.add(new Friend(rs.getInt("FriendNo"), rs.getString("FriendName"), rs.getString("Mobile"),
-						rs.getString("Addr")));
-			}
-			DBConn.closeDB(rs, pstmt, con);;
-		}
-
-		return result;
-	}
-
-	
-=======
-	
-	@Override
-	public int insertFriend(FriendDTO friendDTO) throws NamingException, SQLException {
-		
-		int result = 0;
-		
-		Connection con = DBConn.getConnection();
-		
-		if (con != null) {
-			String query = "insert into friends(friendName, mobile, addr) "
-					+ "values(?, ?, ?)";
-			
-			PreparedStatement pstmt = con.prepareStatement(query);
-			
-			// 매개변수 세팅
-			pstmt.setString(1, friendDTO.getFriendName());
-			pstmt.setString(2, friendDTO.getMobile());
-			pstmt.setString(3, friendDTO.getAddr());
-			
-			// 실행
-			result = pstmt.executeUpdate();
-			
-			DBConn.closeDB(pstmt, con);
-		}
-		
-		return result;
-	}
-
-	@Override
-	public List<Friend> selectFriendByName(String searchName) throws NamingException, SQLException {
-		
-		List<Friend> result = new ArrayList<Friend>();
-		
-		Connection con = DBConn.getConnection();
-		
-		if (con != null) {
-			
-			String query = "select * from friends where friendName like ?"; //? => '%대호%'
-			
-			PreparedStatement pstmt = con.prepareStatement(query);
-			pstmt.setString(1, "%" + searchName + "%");
-			
-			ResultSet rs = pstmt.executeQuery();
-			
-			while(rs.next()) {
-				result.add(new Friend(
-						rs.getInt("friendNo"), 
-						rs.getString("friendName"), 
-						rs.getString("mobile"), 
+				result.add(new Friend(rs.getInt("friendNo"), rs.getString("friendName"), rs.getString("mobile"),
 						rs.getString("addr")));
 			}
 			DBConn.closeDB(rs, pstmt, con);
@@ -163,5 +126,4 @@ List<Friend> result = new ArrayList<Friend>();
 		return result;
 	}
 
->>>>>>> 2d0b855fa6f5a86b8f60de86dd8bd169578f0c40
 }
