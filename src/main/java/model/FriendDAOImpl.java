@@ -105,4 +105,33 @@ List<Friend> result = new ArrayList<Friend>();
 		
 		return result;
 	}
+
+	@Override
+	public List<Friend> selectFriendByName(String searchName) throws NamingException, SQLException {
+		
+		List<Friend> result = new ArrayList<Friend>();
+		
+		Connection con = DBConn.getConnection();
+		
+		if (con != null) {
+			
+			String query = "select * from friends where friendName like ?"; //? => '%대호%'
+			
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setString(1, "%" + searchName + "%");
+			
+			ResultSet rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				result.add(new Friend(
+						rs.getInt("friendNo"), 
+						rs.getString("friendName"), 
+						rs.getString("mobile"), 
+						rs.getString("addr")));
+			}
+			DBConn.closeDB(rs, pstmt, con);
+		}
+		return result;
+	}
+
 }
